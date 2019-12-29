@@ -1,0 +1,51 @@
+{
+    "name" : "pifeifei/ide-helper-generator",
+    "description" : "PHP ReflectionExtension's Information Rewind to PHP Code As Stub",
+    "license" : "BSD-3-Clause",
+    "keywords": ["ide helper","extension", "stub", "ReflectionExtension"],
+    "authors": [
+        {
+            "name": "kis龍",
+            "email": "pifeifei1989@qq.com",
+            "homepage": "https://github.com/pifeifei"
+        }
+    ],
+    "support": {
+        "email": "pifeifei1989@qq.com",
+        "issues": "irc://irc.freenode.org/composer",
+        "source": ""
+    },
+    "require": {
+        "php": "^7.0",
+        "ext-json": "*",
+        "composer/composer": "^1.9.0",
+        "docopt/docopt": "^1.0",
+        "illuminate/support": "^5.4",
+        "symfony/console": "^3.0",
+        "symfony/finder": "^3.4",
+        "zendframework/zend-code": "^3",
+        "zendframework/zend-console": "^2.6"
+    },
+    "require-dev": {
+        "ext-phar": "*",
+        "phpunit/phpunit": "^5.6.4",
+        "symfony/var-dumper": "^3.4.0"
+    },
+    "bin" : [
+        "bin/ide-helper-generator"
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "IDEHelperGenerator\\": "src/IDEHelperGenerator"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PHPExtensionStubGeneratorTest\\": "tests/IDEHelperGeneratorTest"
+        }
+    }
+}
