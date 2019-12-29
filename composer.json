@@ -12,8 +12,8 @@
     ],
     "support": {
         "email": "pifeifei1989@qq.com",
-        "issues": "irc://irc.freenode.org/composer",
-        "source": ""
+        "issues": "https://github.com/pifeifei/ide-helper-generator/issues",
+        "source": "https://github.com/pifeifei/ide-helper-generator.git"
     },
     "require": {
         "php": "^7.0",
