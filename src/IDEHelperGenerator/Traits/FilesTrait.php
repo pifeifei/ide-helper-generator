@@ -49,7 +49,7 @@ trait FilesTrait
                 return;
             }
         } else {
-            $this->output->note("save path: {$dir}");
+            $this->output->success("save path: {$dir}");
         }
 
         $generates = $this->getGenerates();

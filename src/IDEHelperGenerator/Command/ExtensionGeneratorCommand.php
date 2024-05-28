@@ -19,7 +19,7 @@ class ExtensionGeneratorCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'generator:ext {extension}
+    protected $signature = 'gen:ext {extension}
                     {--p|print=false : 屏幕输出}
                     {--d|dir=ext : 保存目录，默认会创建子目录保存}
                     {--s|subdirectory=true : 创建子目录目录，默认会创建子目录保存}';
@@ -45,9 +45,9 @@ class ExtensionGeneratorCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return mixed|void
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $extension = $this->input->getArgument('extension');
         $dir = $this->input->getOption('dir');
@@ -72,9 +72,10 @@ class ExtensionGeneratorCommand extends Command
 
     /**
      * 屏幕输出
+     *
      * @param string $extension  ext name
      */
-    private function dumperPrintScreen($extension)
+    private function dumperPrintScreen(string $extension): void
     {
         try {
             $dumper = new GeneratorDumper(new ReflectionExtension($extension));
@@ -92,14 +93,14 @@ class ExtensionGeneratorCommand extends Command
      * @param string $extension   ext name
      * @param string $dir  保存目录
      */
-    private function dumperFiles($extension, $dir)
+    private function dumperFiles(string $extension, string $dir): void
     {
         if (is_dir($dir)) {
             if (false === $this->output->confirm("Is it covered path({$dir})?")) {
                 return;
             }
         } else {
-            $this->output->note("save path: {$dir}");
+            $this->output->success("save path: {$dir}");
         }
 
         try {

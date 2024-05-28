@@ -5,10 +5,5 @@ use IDEHelperGenerator\Console\Application;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-try {
     $app = new Application('1.0.0');
     $app->run();
-} catch (Exception $e) {
-    dump('error :' . $e->getMessage());
-    dump($e->getTraceAsString());
-}
