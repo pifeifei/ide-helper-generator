@@ -45,7 +45,6 @@ class FilesDumper
         }
     }
 
-//    protected function getGenerationTargets() : Iterator
     protected function getGenerates() : Iterator
     {
         yield from $this->generateConstants();

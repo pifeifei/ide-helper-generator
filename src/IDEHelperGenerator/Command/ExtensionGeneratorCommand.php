@@ -45,13 +45,19 @@ class ExtensionGeneratorCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return int
      */
-    public function handle(): void
+    public function handle(): int
     {
         $extension = $this->input->getArgument('extension');
         $dir = $this->input->getOption('dir');
         $subdirectory = $this->input->getOption('subdirectory');
+
+        if (! $this->hasExtension($extension)) {
+            $this->error('Extension \''.$extension.'\' not present.');
+            return 0;
+        }
+
         if (realpath($dir)) {
             $dir = realpath($dir);
         } else {
@@ -68,6 +74,11 @@ class ExtensionGeneratorCommand extends Command
         } else {
             $this->dumperFiles($extension, $dir);
         }
+    }
+
+    protected function hasExtension(string $extension): bool
+    {
+        return extension_loaded($extension);
     }
 
     /**

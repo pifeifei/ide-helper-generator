@@ -2,11 +2,12 @@
 //declare(strict_types=1);
 
 /**
- * most of parts is borrowed from zendframework/zend-code
- * https://github.com/zendframework/zend-code
+ * most of the parts is borrowed from zendframework/zend-code
+ *
  *
  * This source is aimed for hack to override zend-code.
  *
+ * @link https://github.com/zendframework/zend-code
  * @license New BSD, code from Zend Framework
  * https://github.com/zendframework/zend-code/blob/master/LICENSE.md
  */

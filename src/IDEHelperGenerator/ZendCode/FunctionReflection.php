@@ -2,8 +2,8 @@
 //declare(strict_types=1);
 
 /**
- * most of parts is borrowed from zendframework/zend-code
- * https://github.com/zendframework/zend-code
+ * most of the parts is borrowed from zendframework/zend-code
+ * @see https://github.com/zendframework/zend-code
  *
  * This source is aimed for hack to override zend-code.
  *
@@ -51,7 +51,7 @@ class FunctionReflection extends BaseFunctionReflection
         return $zendReflections;
     }
 
-    public function getPrototype($format = FunctionReflection::PROTOTYPE_AS_ARRAY)
+    public function getPrototype($format = self::PROTOTYPE_AS_ARRAY)
     {
         $returnType = 'mixed';
         if ($this->hasReturnType()) {
@@ -72,7 +72,6 @@ class FunctionReflection extends BaseFunctionReflection
 
         $prototype = [
             'namespace' => $this->getNamespaceName(),
-//            'name'      => substr($this->getName(), strlen($this->getNamespaceName()) + 1),
             'name'      => substr($this->getName(), strlen($this->getNamespaceName()) + ($this->getNamespaceName() ? 1 : 0)),
             'return'    => $returnType,
             'arguments' => [],

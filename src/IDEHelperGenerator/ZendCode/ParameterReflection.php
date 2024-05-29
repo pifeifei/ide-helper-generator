@@ -2,9 +2,9 @@
 //declare(strict_types=1);
 
 /**
- * most of parts is borrowed from zendframework/zend-code
- * https://github.com/zendframework/zend-code
- * 
+ * most of the parts is borrowed from zendframework/zend-code
+ * @see https://github.com/zendframework/zend-code
+ *
  * This source is aimed for hack to override zend-code.
  *
  * @license New BSD, code from Zend Framework
@@ -17,7 +17,7 @@ use Zend\Code\Reflection\ParameterReflection as BaseParameterReflection;
 
 class ParameterReflection extends BaseParameterReflection
 {
-    public function detectType()
+    public function detectType(): ?string
     {
         if (method_exists($this, 'getType')
             && ($type = $this->getType())
@@ -41,21 +41,5 @@ class ParameterReflection extends BaseParameterReflection
         }
 
         return null;
-
-        // currenty, ignore docblock..
-
-//        $docBlock = $this->getDeclaringFunction()->getDocBlock();
-//
-//        if (! $docBlock instanceof DocBlockReflection) {
-//            return null;
-//        }
-//
-//        $params = $docBlock->getTags('param');
-//
-//        if (isset($params[$this->getPosition()])) {
-//            return $params[$this->getPosition()]->getType();
-//        }
-//
-//        return null;
     }
 }
