@@ -1,12 +1,13 @@
 <?php
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace IDEHelperGenerator;
 
 use Generator;
-use ReflectionExtension;
 use IDEHelperGenerator\ZendCode\FunctionGenerator;
 use IDEHelperGenerator\ZendCode\FunctionReflection;
+use ReflectionExtension;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\DocBlockGenerator;
 use Zend\Code\Reflection\ClassReflection;
@@ -21,19 +22,19 @@ class GeneratorDumper
         $this->reflectionExtension = $reflectionExtension;
     }
 
-    public function getGenerates() : Generator
+    public function getGenerates(): Generator
     {
         yield from $this->generateConstants();
         yield from $this->generateFunctions();
         yield from $this->generateClasses();
     }
 
-    public function setDocBlockGenerator(DocBlockGenerator $docBlockGenerator) : void
+    public function setDocBlockGenerator(DocBlockGenerator $docBlockGenerator): void
     {
         $this->docBlockGenerator = $docBlockGenerator;
     }
 
-    public function getDocBlockGenerator() : DocBlockGenerator
+    public function getDocBlockGenerator(): DocBlockGenerator
     {
         if (!$this->docBlockGenerator instanceof DocBlockGenerator) {
             $docBlockGenerator = new DocBlockGenerator('auto generated file by ide helper generator.');
@@ -55,8 +56,8 @@ class GeneratorDumper
             $c = preg_split('#\\\#', $constant);
 
             // has namespace ?
-            if (count($c) > 1) {
-                list($namespaces, $constName) = array_chunk($c, count($c)-1);
+            if (\count($c) > 1) {
+                [$namespaces, $constName] = array_chunk($c, \count($c) - 1);
                 $constName = current($constName);
 
                 $namespace = implode('\\', $namespaces);
@@ -65,15 +66,15 @@ class GeneratorDumper
                     yield "namespace {$namespace};";
                 }
 
-                $encodeValue = is_string($value) ? sprintf('"%s"', $value) : $value;
-                yield "const $constName = {$encodeValue};";
+                $encodeValue = \is_string($value) ? sprintf('"%s"', $value) : $value;
+                yield "const {$constName} = {$encodeValue};";
             } else {
-                $encodeValue = is_string($value) ? sprintf('"%s"', $value) : $value;
-                yield "const $constant = {$encodeValue};";
+                $encodeValue = \is_string($value) ? sprintf('"%s"', $value) : $value;
+                yield "const {$constant} = {$encodeValue};";
             }
         }
 
-        return "";
+        return '';
     }
 
     public function generateClasses() //: Generator
@@ -85,14 +86,13 @@ class GeneratorDumper
             yield $classGenerator->generate();
         }
 
-        return "";
+        return '';
     }
 
     public function generateFunctions() //: Generator
     {
         $declaredNamespaces = [];
         foreach ($this->reflectionExtension->getFunctions() as $function_name => $phpFunctionReflection) {
-
             $functionReflection = new FunctionReflection($function_name);
 
             $namespace = $functionReflection->getNamespaceName();
@@ -104,6 +104,6 @@ class GeneratorDumper
             yield FunctionGenerator::generateByPrototypeArray($functionReflection->getPrototype());
         }
 
-        return "";
+        return '';
     }
 }

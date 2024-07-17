@@ -1,13 +1,14 @@
 <?php
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 /**
- * most of the parts is borrowed from zendframework/zend-code
- *
+ * most of the parts is borrowed from zendframework/zend-code.
  *
  * This source is aimed for hack to override zend-code.
  *
- * @link https://github.com/zendframework/zend-code
+ * @see https://github.com/zendframework/zend-code
+ *
  * @license New BSD, code from Zend Framework
  * https://github.com/zendframework/zend-code/blob/master/LICENSE.md
  */
@@ -16,8 +17,6 @@ namespace IDEHelperGenerator\ZendCode;
 
 use ReflectionFunction;
 use Zend\Code\Generator\AbstractGenerator;
-use Zend\Code\Generator\ClassGenerator;
-use Zend\Code\Reflection\ClassReflection;
 
 class FunctionGenerator extends AbstractGenerator
 {
@@ -26,7 +25,7 @@ class FunctionGenerator extends AbstractGenerator
         $line = 'function' . ' ' . $prototype['name'] . '(';
         $args = [];
         foreach ($prototype['arguments'] as $name => $argument) {
-            $type = ($argument['type'] && $argument['type'] !== 'resource') ? "{$argument['type']} " : "";
+            $type = ($argument['type'] && 'resource' !== $argument['type']) ? "{$argument['type']} " : '';
             $argsLine = $type . ($argument['by_ref'] ? '&' : '') . '$' . $name;
             if (!$argument['required']) {
                 $argsLine .= ' = ' . var_export($argument['default'], true);
@@ -34,32 +33,30 @@ class FunctionGenerator extends AbstractGenerator
             $args[] = $argsLine;
         }
         $line .= implode(', ', $args);
-        $line .= ')' . ($prototype['return'] !== 'mixed' ? ": {$prototype['return']}" : "") . ' {}';
+        $line .= ')' . ('mixed' !== $prototype['return'] ? ": {$prototype['return']}" : '') . ' {}';
 
         return $line;
     }
 
-
     /**
-     * Build a Code Generation Php Object from a Function Reflection
+     * Build a Code Generation Php Object from a Function Reflection.
      *
-     * @param  FunctionReflection $functionReflection
      * @return self
      */
     public static function fromReflection(FunctionReflection $functionReflection)
     {
-
     }
 
     /**
-     * Generate from array
+     * Generate from array.
      *
-     * @param  ReflectionFunction[] $array
+     * @param ReflectionFunction[] $array
+     *
      * @return self
      */
     public static function fromArray(array $array)
     {
-        return new self;
+        return new self();
     }
 
     public function generate()

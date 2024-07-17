@@ -2,9 +2,9 @@
 
 namespace IDEHelperGenerator\Console;
 
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class OutputStyle extends SymfonyStyle
 {
@@ -17,10 +17,6 @@ class OutputStyle extends SymfonyStyle
 
     /**
      * Create a new Console OutputStyle instance.
-     *
-     * @param  \Symfony\Component\Console\Input\InputInterface  $input
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $output
-     * @return void
      */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
@@ -34,7 +30,7 @@ class OutputStyle extends SymfonyStyle
      *
      * @return bool
      */
-    public function isQuiet()
+    public function isQuiet(): bool
     {
         return $this->output->isQuiet();
     }
@@ -54,7 +50,7 @@ class OutputStyle extends SymfonyStyle
      *
      * @return bool
      */
-    public function isVeryVerbose()
+    public function isVeryVerbose(): bool
     {
         return $this->output->isVeryVerbose();
     }
@@ -64,7 +60,7 @@ class OutputStyle extends SymfonyStyle
      *
      * @return bool
      */
-    public function isDebug()
+    public function isDebug(): bool
     {
         return $this->output->isDebug();
     }

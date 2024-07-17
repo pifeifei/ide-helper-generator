@@ -1,16 +1,12 @@
 <?php
 
-
 namespace IDEHelperGenerator\Traits;
 
-
-use IDEHelperGenerator\Console\FilesDumper;
 use IDEHelperGenerator\Console\OutputStyle;
 
 trait FilesTrait
 {
-
-    /* @var OutputStyle */
+    /** @var OutputStyle */
     protected $output;
 
     private $saveDir;
@@ -19,6 +15,7 @@ trait FilesTrait
     public function setSaveDir($dir)
     {
         $this->saveDir = $dir;
+
         return $this;
     }
 
@@ -30,6 +27,7 @@ trait FilesTrait
     public function setSubdirectory($isSubdirectory = true)
     {
         $this->subdirectory = $isSubdirectory;
+
         return $this;
     }
 
@@ -39,7 +37,6 @@ trait FilesTrait
 
         return $this->subdirectory;
     }
-
 
     protected function dumperFiles()
     {
@@ -56,15 +53,14 @@ trait FilesTrait
 
         foreach ($generates as $fileName => $code) {
             $pathinfo = pathinfo($fileName);
-            $codeDir = $dir . DIRECTORY_SEPARATOR . $pathinfo['dirname'];
+            $codeDir = $dir . \DIRECTORY_SEPARATOR . $pathinfo['dirname'];
             if (!file_exists($codeDir)) {
                 mkdir($codeDir, 0777, true);
             }
 
             $code = $this->getDocBlockGenerator()->generate() . $code;
-            file_put_contents($codeDir . DIRECTORY_SEPARATOR . $pathinfo['basename'], "<?php\n$code");
+            file_put_contents($codeDir . \DIRECTORY_SEPARATOR . $pathinfo['basename'], "<?php\n{$code}");
         }
-
 
 //        /** @var FilesDumper $dumper */
 //        $filesDumper = new FilesDumper(new ReflectionExtension($extension), $this->output);

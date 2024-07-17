@@ -1,11 +1,16 @@
 <?php
+
 namespace IDEHelperGeneratorTest\Unit;
 
-use ReflectionExtension;
-use PHPUnit\Framework\TestCase;
 use IDEHelperGenerator\FilesDumper;
+use PHPUnit\Framework\TestCase;
+use ReflectionExtension;
 
-class FilesDumperTest extends TestCase
+/**
+ * @internal
+ * @coversNothing
+ */
+final class FilesDumperTest extends TestCase
 {
     /**
      * @var FilesDumper
@@ -19,7 +24,7 @@ class FilesDumperTest extends TestCase
         self::$tmpDir = sys_get_temp_dir() . '/ide-helper-generator';
     }
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->generator = new FilesDumper(new ReflectionExtension('mbstring'));
     }

@@ -2,14 +2,11 @@
 
 namespace IDEHelperGenerator\Dumper;
 
-
 use Generator;
-use IDEHelperGenerator\Console\OutputStyle;
 use IDEHelperGenerator\Contracts\HelperDumperInterface;
 use IDEHelperGenerator\GeneratorDumper;
 use IDEHelperGenerator\ZendCode\FunctionGenerator;
 use IDEHelperGenerator\ZendCode\FunctionReflection;
-use ReflectionException;
 use ReflectionExtension;
 use Zend\Code\Generator\ClassGenerator;
 use Zend\Code\Generator\DocBlockGenerator;
@@ -17,20 +14,18 @@ use Zend\Code\Reflection\ClassReflection;
 
 abstract class AbstractHelperGenerator implements HelperDumperInterface
 {
+    public const CONST_FILENAME = '%s/const.php';
+    public const FUNCTIONS_FILENAME = '%s/functions.php';
+    public const CLASS_FILENAME = '%s.php';
     protected $reflectionExtension;
     protected $docBlockGenerator;
-
-    const CONST_FILENAME = '%s/const.php';
-    const FUNCTIONS_FILENAME = '%s/functions.php';
-    const CLASS_FILENAME = '%s.php';
 
     public function __construct(ReflectionExtension $reflectionExtension)
     {
         $this->reflectionExtension = $reflectionExtension;
     }
 
-
-    public function getGenerates() : Generator
+    public function getGenerates(): Generator
     {
         yield from $this->generateConstants();
         yield from $this->generateFunctions();
@@ -42,8 +37,7 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
         $this->docBlockGenerator = $docBlockGenerator;
     }
 
-
-    public function getDocBlockGenerator() : DocBlockGenerator
+    public function getDocBlockGenerator(): DocBlockGenerator
     {
         if (!$this->docBlockGenerator instanceof DocBlockGenerator) {
             $docBlockGenerator = new DocBlockGenerator('auto generated file by ide helper generator.');
@@ -65,8 +59,8 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
             $c = preg_split('#\\\#', $constant);
 
             // has namespace ?
-            if (count($c) > 1) {
-                list($namespaces, $constName) = array_chunk($c, count($c)-1);
+            if (\count($c) > 1) {
+                [$namespaces, $constName] = array_chunk($c, \count($c) - 1);
                 $constName = current($constName);
 
                 $namespace = implode('\\', $namespaces);
@@ -75,16 +69,16 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
                     yield "namespace {$namespace};";
                 }
 
-                $encodeValue = is_string($value) ? sprintf('"%s"', $value) : $value;
-                yield "const $constName = {$encodeValue};";
+                $encodeValue = \is_string($value) ? sprintf('"%s"', $value) : $value;
+                yield "const {$constName} = {$encodeValue};";
             } else {
-                $encodeValue = is_string($value) ? sprintf('"%s"', $value) : $value;
-                yield "const $constant = {$encodeValue};";
+                $encodeValue = \is_string($value) ? sprintf('"%s"', $value) : $value;
+                yield "const {$constant} = {$encodeValue};";
             }
         }
     }
 
-    public function generateClasses() : Generator
+    public function generateClasses(): Generator
     {
         /** @var \ReflectionClass $phpClassReflection */
         foreach ($this->reflectionExtension->getClasses() as $fqcn => $phpClassReflection) {
@@ -100,13 +94,12 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
     {
         $functionFiles = [];
         foreach ($this->reflectionExtension->getFunctions() as $function_name => $phpFunctionReflection) {
-
             $functionReflection = new FunctionReflection($function_name);
 
             $function_filename = sprintf(static::FUNCTIONS_FILENAME, str_replace('\\', '/', $functionReflection->getNamespaceName()));
 
             if (isset($functionFiles[$function_filename])) {
-                $functionFiles[$function_filename] .= "\n".
+                $functionFiles[$function_filename] .= "\n" .
                     FunctionGenerator::generateByPrototypeArray($functionReflection->getPrototype());
             } else {
                 $namespaceLine = '';
@@ -116,9 +109,7 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
                 $functionFiles[$function_filename] = $namespaceLine . "\n" .
                     FunctionGenerator::generateByPrototypeArray($functionReflection->getPrototype());
             }
-        }
-
-        [
+        }[
             'extension' => '', // 所属扩展,首字母大写
             'namespace' => '', // 创建子文件夹,首字母大写
                 'interface' => '', // 文件名+interface
@@ -128,6 +119,7 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
                 'const' => '',
             'source' => '',
         ];
+
         return $functionFiles;
 //        $declaredNamespaces = [];
 //        foreach ($this->reflectionExtension->getFunctions() as $function_name => $phpFunctionReflection) {
@@ -151,7 +143,7 @@ abstract class AbstractHelperGenerator implements HelperDumperInterface
     abstract public function run();
 
     /**
-     * 屏幕输出
+     * 屏幕输出。
      */
     protected function dumperPrintScreen()
     {

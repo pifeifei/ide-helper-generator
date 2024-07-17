@@ -1,8 +1,6 @@
 <?php
 
-
 namespace IDEHelperGenerator;
-
 
 use IDEHelperGenerator\Console\OutputStyle;
 use IDEHelperGenerator\Dumper\ExtensionGenerator;

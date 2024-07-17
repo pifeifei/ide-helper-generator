@@ -4,7 +4,6 @@ namespace IDEHelperGenerator\Command;
 
 use IDEHelperGenerator\Console\Command;
 use IDEHelperGenerator\Console\FilesDumper;
-use IDEHelperGenerator\Console\Parser;
 use IDEHelperGenerator\GeneratorDumper;
 use ReflectionException;
 use ReflectionExtension;
@@ -12,6 +11,7 @@ use Symfony\Component\Console\Application as SymfonyApplication;
 
 class ExtensionGeneratorCommand extends Command
 {
+    /** @var SymfonyApplication */
     protected $app;
 
     /**
@@ -33,8 +33,6 @@ class ExtensionGeneratorCommand extends Command
 
     /**
      * Create a new command instance.
-     *
-     * @param SymfonyApplication $app
      */
     public function __construct(SymfonyApplication $app)
     {
@@ -44,8 +42,6 @@ class ExtensionGeneratorCommand extends Command
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
     public function handle(): int
     {
@@ -53,19 +49,38 @@ class ExtensionGeneratorCommand extends Command
         $dir = $this->input->getOption('dir');
         $subdirectory = $this->input->getOption('subdirectory');
 
-        if (! $this->hasExtension($extension)) {
-            $this->error('Extension \''.$extension.'\' not present.');
-            return 0;
+        if (empty($extension)) {
+            $this->error('Missing extension name.');
+
+            return static::FAILURE;
+        }
+
+        if (!\is_string($extension)) {
+            $this->error('Please provide a string.');
+
+            return static::FAILURE;
+        }
+
+        if (!$this->hasExtension($extension)) {
+            $this->error('Extension \'' . $extension . '\' not present.');
+
+            return static::FAILURE;
+        }
+
+        if (!\is_string($dir)) {
+            $this->error('Please provide a string(path).');
+
+            return static::FAILURE;
         }
 
         if (realpath($dir)) {
             $dir = realpath($dir);
         } else {
-            $dir = getcwd(). DIRECTORY_SEPARATOR . $dir;
+            $dir = getcwd() . \DIRECTORY_SEPARATOR . $dir;
         }
 
         if ($subdirectory) {
-            $dir .= DIRECTORY_SEPARATOR . $extension;
+            $dir .= \DIRECTORY_SEPARATOR . $extension;
         }
 
         $print = $this->input->getOption('print');
@@ -74,17 +89,19 @@ class ExtensionGeneratorCommand extends Command
         } else {
             $this->dumperFiles($extension, $dir);
         }
+
+        return 0;
     }
 
     protected function hasExtension(string $extension): bool
     {
-        return extension_loaded($extension);
+        return \extension_loaded($extension);
     }
 
     /**
-     * 屏幕输出
+     * 屏幕输出。
      *
-     * @param string $extension  ext name
+     * @param string $extension ext name
      */
     private function dumperPrintScreen(string $extension): void
     {
@@ -95,14 +112,15 @@ class ExtensionGeneratorCommand extends Command
                 fwrite(STDOUT, $line . "\n");
             }
         } catch (ReflectionException $exception) {
-            $this->output->error("error: " . $exception->getMessage());
+            $this->output->error('error: ' . $exception->getMessage());
+
             exit(1);
         }
     }
 
     /**
-     * @param string $extension   ext name
-     * @param string $dir  保存目录
+     * @param string $extension ext name
+     * @param string $dir 保存目录
      */
     private function dumperFiles(string $extension, string $dir): void
     {
@@ -115,11 +133,11 @@ class ExtensionGeneratorCommand extends Command
         }
 
         try {
-            /** @var FilesDumper $dumper */
             $filesDumper = new FilesDumper(new ReflectionExtension($extension), $this->output);
             $filesDumper->dumpFiles($dir);
         } catch (ReflectionException $exception) {
-            $this->output->error("error: " . $exception->getMessage());
+            $this->output->error('error: ' . $exception->getMessage());
+
             exit(1);
         }
     }

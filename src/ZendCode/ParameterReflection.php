@@ -1,8 +1,10 @@
 <?php
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 /**
- * most of the parts is borrowed from zendframework/zend-code
+ * most of the parts is borrowed from zendframework/zend-code.
+ *
  * @see https://github.com/zendframework/zend-code
  *
  * This source is aimed for hack to override zend-code.

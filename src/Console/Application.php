@@ -1,6 +1,5 @@
 <?php
 
-
 namespace IDEHelperGenerator\Console;
 
 use Closure;
@@ -22,13 +21,6 @@ class Application extends SymfonyApplication
      * @var \Symfony\Component\Console\Output\BufferedOutput
      */
     protected $lastOutput;
-
-//    /**
-//     * The commands provided by the application.
-//     *
-//     * @var array
-//     */
-//    protected $commands = [];
 
     /**
      * The console application bootstrappers.
@@ -55,39 +47,11 @@ class Application extends SymfonyApplication
     /**
      * Register a console "starting" bootstrapper.
      *
-     * @param  \Closure  $callback
      * @return void
      */
     public static function starting(Closure $callback)
     {
         static::$bootstrappers[] = $callback;
-    }
-
-    /**
-     * Bootstrap the console application.
-     *
-     * @return void
-     */
-    protected function bootstrap()
-    {
-        $paths = __DIR__.'/../Command/';
-        $namespace = $this->getNamespace();
-
-        foreach ((new Finder)->in($paths)->files() as $command) {
-            $command = $namespace.str_replace(
-                    ['/', '.php'],
-                    ['\\', ''],
-                    Str::after(realpath($command . ''), realpath(__DIR__.'/../').DIRECTORY_SEPARATOR)
-                );
-            if (is_subclass_of($command, Command::class) &&
-                ! (new ReflectionClass($command))->isAbstract()) {
-                $this->add(new $command($this));
-            }
-        }
-
-        foreach (static::$bootstrappers as $bootstrapper){
-            $this->add(new $bootstrapper($this));
-        }
     }
 
     /**
@@ -103,16 +67,16 @@ class Application extends SymfonyApplication
     /**
      * Run an Artisan console command by name.
      *
-     * @param  string  $command
-     * @param  array  $parameters
-     * @param  \Symfony\Component\Console\Output\OutputInterface  $outputBuffer
+     * @param string $command
+     * @param \Symfony\Component\Console\Output\OutputInterface $outputBuffer
+     *
      * @return int
      */
     public function call($command, array $parameters = [], $outputBuffer = null)
     {
         $parameters = collect($parameters)->prepend($command);
 
-        $this->lastOutput = $outputBuffer ?: new BufferedOutput;
+        $this->lastOutput = $outputBuffer ?: new BufferedOutput();
 
         $this->setCatchExceptions(false);
 
@@ -136,17 +100,17 @@ class Application extends SymfonyApplication
     /**
      * Get the application namespace.
      *
-     * @return string
-     *
      * @throws RuntimeException
+     *
+     * @return string
      */
     public function getNamespace()
     {
-        if (! is_null($this->namespace)) {
+        if (!\is_null($this->namespace)) {
             return $this->namespace;
         }
 
-        $composer = json_decode(file_get_contents(realpath(__DIR__. '/../../../') . ('/composer.json')), true);
+        $composer = json_decode(file_get_contents(realpath(__DIR__ . '/../../../') . ('/composer.json')), true);
 
         foreach ((array) data_get($composer, 'autoload.psr-4') as $namespace => $path) {
             foreach ((array) $path as $pathChoice) {
@@ -157,5 +121,30 @@ class Application extends SymfonyApplication
         }
 
         throw new RuntimeException('Unable to detect application namespace.');
+    }
+
+    /**
+     * Bootstrap the console application.
+     */
+    protected function bootstrap()
+    {
+        $paths = __DIR__ . '/../Command/';
+        $namespace = $this->getNamespace();
+
+        foreach ((new Finder())->in($paths)->files() as $command) {
+            $command = $namespace . str_replace(
+                ['/', '.php'],
+                ['\\', ''],
+                Str::after(realpath($command . ''), realpath(__DIR__ . '/../') . \DIRECTORY_SEPARATOR)
+            );
+            if (is_subclass_of($command, Command::class)
+                && !(new ReflectionClass($command))->isAbstract()) {
+                $this->add(new $command($this));
+            }
+        }
+
+        foreach (static::$bootstrappers as $bootstrapper) {
+            $this->add(new $bootstrapper($this));
+        }
     }
 }

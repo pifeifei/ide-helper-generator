@@ -1,8 +1,6 @@
 <?php
 
-
 namespace IDEHelperGenerator\Dumper;
-
 
 use IDEHelperGenerator\Console\OutputStyle;
 use IDEHelperGenerator\Traits\FilesTrait;
@@ -13,12 +11,12 @@ class ExtensionGenerator extends AbstractHelperGenerator
 {
     use FilesTrait;
 
-    /* @var OutputStyle */
+    /** @var OutputStyle */
     protected $output;
 
     private $extensionName;
 
-    /* @var ReflectionExtension */
+    /** @var ReflectionExtension */
     private $phpReflection;
     /**
      * @var bool
@@ -34,6 +32,7 @@ class ExtensionGenerator extends AbstractHelperGenerator
             parent::__construct($this->phpReflection);
         } catch (ReflectionException $e) {
             $output->error($e->getMessage());
+
             exit(1);
         }
     }
@@ -41,12 +40,13 @@ class ExtensionGenerator extends AbstractHelperGenerator
     public function setPrint($isPrint = true)
     {
         $this->print = $isPrint;
+
         return $this;
     }
 
     public function isPrint()
     {
-        return (bool)($this->print);
+        return (bool) ($this->print);
     }
 
     public function run()
@@ -65,19 +65,17 @@ class ExtensionGenerator extends AbstractHelperGenerator
 
     private function getRealSavePath()
     {
-
         $dir = $this->getSaveDir();
         if (realpath($dir)) {
             $dir = realpath($dir);
         } else {
-            $dir = getcwd(). DIRECTORY_SEPARATOR . $dir;
+            $dir = getcwd() . \DIRECTORY_SEPARATOR . $dir;
         }
 
         if ($this->getSubdirectory()) {
-            $dir .= DIRECTORY_SEPARATOR . $this->getExtensionName();
+            $dir .= \DIRECTORY_SEPARATOR . $this->getExtensionName();
         }
 
         return $dir;
     }
-
 }

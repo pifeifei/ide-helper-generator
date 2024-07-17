@@ -1,11 +1,12 @@
 <?php
-//declare(strict_types=1);
+
+declare(strict_types=1);
 
 namespace IDEHelperGenerator\Console;
 
+use IDEHelperGenerator\FilesDumper as BaseFilesDumper;
 use Iterator;
 use ReflectionExtension;
-use IDEHelperGenerator\FilesDumper as BaseFilesDumper;
 
 class FilesDumper extends BaseFilesDumper
 {
@@ -17,8 +18,7 @@ class FilesDumper extends BaseFilesDumper
         $this->console = $console;
     }
 
-//    protected function getGenerationTargets() : Iterator
-    protected function getGenerates() : Iterator
+    protected function getGenerates(): Iterator
     {
         foreach (parent::getGenerates() as $file => $code) {
             $this->console->writeln($file);
