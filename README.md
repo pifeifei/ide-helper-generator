@@ -6,6 +6,12 @@ PHP ReflectionExtension's Information Rewind to PHP Code As Stub.
 # Purpose
 Code Completion under IDE.
 
+## support
+
+* 0.x： php 7.2 - 7.4
+* 1.x： php 7.4 - 8.x developing
+
+
 ## USAGE
 
 ```shell
