@@ -15,20 +15,24 @@ declare(strict_types=1);
 
 namespace IDEHelperGenerator\ZendCode;
 
-use Zend\Code\Reflection\DocBlockReflection;
-use Zend\Code\Reflection\FunctionReflection as BaseFunctionReflection;
+use Laminas\Code\Reflection\DocBlock\Tag\TagInterface as DocBlockTagInterface;
+use Laminas\Code\Reflection\DocBlockReflection;
+use Laminas\Code\Reflection\FunctionReflection as BaseFunctionReflection;
 
 class FunctionReflection extends BaseFunctionReflection
 {
     public function getDocBlock(): DocBlockReflection
     {
         if (false === ($comment = $this->getDocComment())) {
-            return new DocBlockReflection('');
+            return new DocBlockReflection('todo: empty');
         }
 
         return new DocBlockReflection($comment);
     }
 
+    /**
+     * @return ParameterReflection[]
+     */
     public function getParameters(): array
     {
         $parametersReflections = parent::getParameters();
@@ -53,17 +57,28 @@ class FunctionReflection extends BaseFunctionReflection
         if ($this->hasReturnType()) {
             $reflectReturn = $this->getReturnType();
             if ($reflectReturn->allowsNull()) {
-                $returnType = sprintf('?%s', $reflectReturn->getName());
+                if ($reflectReturn instanceof \ReflectionNamedType) {
+                    $returnType = sprintf('?%s', $reflectReturn->getName());
+                } elseif ($reflectReturn instanceof \ReflectionUnionType) {
+                    $returnType = sprintf('?%s', implode('|', $reflectReturn->getTypes()));
+                }
             } else {
-                $returnType = $reflectReturn->getName();
+                if (method_exists($reflectReturn, 'getTypes')) {
+                    $returnType = $reflectReturn->getTypes();
+                } else {
+                    $returnType = $reflectReturn->getName();
+                }
             }
         }
 
         $docBlock = $this->getDocBlock();
         if ('mixed' === $returnType && $docBlock) {
             $return = $docBlock->getTag('return');
-            $returnTypes = $return->getTypes();
-            $returnType = \count($returnTypes) > 1 ? implode('|', $returnTypes) : $returnTypes[0];
+
+            if ($return instanceof DocBlockTagInterface) {
+                $returnTypes = $return->getTypes();
+                $returnType = \count($returnTypes) > 1 ? implode('|', $returnTypes) : $returnTypes[0];
+            }
         }
 
         $prototype = [

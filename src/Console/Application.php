@@ -32,9 +32,9 @@ class Application extends SymfonyApplication
     /**
      * Create a new Artisan console application.
      *
-     * @param string $version
+     * @param string|null $version
      */
-    public function __construct($version = null)
+    public function __construct(string $version = null)
     {
         parent::__construct('ide helper generator', $version);
 
@@ -46,8 +46,6 @@ class Application extends SymfonyApplication
 
     /**
      * Register a console "starting" bootstrapper.
-     *
-     * @return void
      */
     public static function starting(Closure $callback)
     {
@@ -56,8 +54,6 @@ class Application extends SymfonyApplication
 
     /**
      * Clear the console application bootstrappers.
-     *
-     * @return void
      */
     public static function forgetBootstrappers()
     {
@@ -110,11 +106,11 @@ class Application extends SymfonyApplication
             return $this->namespace;
         }
 
-        $composer = json_decode(file_get_contents(realpath(__DIR__ . '/../../../') . ('/composer.json')), true);
-
+        $root = realpath(__DIR__ . '/../../');
+        $composer = json_decode(file_get_contents($root . ('/composer.json')), true);
         foreach ((array) data_get($composer, 'autoload.psr-4') as $namespace => $path) {
             foreach ((array) $path as $pathChoice) {
-                if (strpos(str_replace('\\', '/', realpath(__DIR__ . '/../../../' . $pathChoice)), $pathChoice) > 0) {
+                if (strpos(str_replace('\\', '/', realpath($root .'/'. $pathChoice)), $pathChoice) > 0) {
                     return $this->namespace = $namespace;
                 }
             }

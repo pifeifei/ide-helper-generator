@@ -2,7 +2,7 @@
 
 namespace IDEHelperGenerator\ZendCode;
 
-use Zend\Code\Generator\FileGenerator as ZendGenerator;
+use Laminas\Code\Generator\FileGenerator as ZendGenerator;
 
 /**
  * @deprecated

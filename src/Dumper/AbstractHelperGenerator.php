@@ -8,9 +8,9 @@ use IDEHelperGenerator\GeneratorDumper;
 use IDEHelperGenerator\ZendCode\FunctionGenerator;
 use IDEHelperGenerator\ZendCode\FunctionReflection;
 use ReflectionExtension;
-use Zend\Code\Generator\ClassGenerator;
-use Zend\Code\Generator\DocBlockGenerator;
-use Zend\Code\Reflection\ClassReflection;
+use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Reflection\ClassReflection;
 
 abstract class AbstractHelperGenerator implements HelperDumperInterface
 {

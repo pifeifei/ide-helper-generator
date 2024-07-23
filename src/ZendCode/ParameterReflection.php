@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace IDEHelperGenerator\ZendCode;
 
-use Zend\Code\Reflection\ParameterReflection as BaseParameterReflection;
+use Laminas\Code\Reflection\ParameterReflection as BaseParameterReflection;
 
 class ParameterReflection extends BaseParameterReflection
 {
@@ -25,17 +25,40 @@ class ParameterReflection extends BaseParameterReflection
             && ($type = $this->getType())
             && $type->isBuiltin()
         ) {
-            return (string) $type;
+            return $type->getName();
         }
 
-        // can be dropped when dropping PHP7 support:
-        if ($this->isArray()) {
-            return 'array';
+        if (false === $this->hasType()) {
+            $refType = $this->getType();
+            if ($refType instanceof \ReflectionNamedType) {
+                return sprintf('%s$%s', $this->isPassedByReference()? '&':($this->isVariadic()? '...': ''), $this->getName());
+            }
+
+            if ($refType instanceof \ReflectionUnionType) {
+                return sprintf(
+                    '%s%s$%s',
+                    ($refType->allowsNull() ? '?':'').implode('|', $refType->getTypes()),
+                    $this->isPassedByReference()? '&':($this->isVariadic()? '...': ''),
+                    $this->getName()
+                );
+            }
+
+            if ($refType instanceof \ReflectionIntersectionType) {
+                return sprintf(
+                    '%s%s$%s',
+                    ($refType->allowsNull() ? '?':'').implode('&', $refType->getTypes()),
+                    $this->isPassedByReference()? '&':($this->isVariadic()? '...': ''),
+                    $this->getName()
+                );
+            }
         }
 
-        // can be dropped when dropping PHP7 support:
-        if ($this->isCallable()) {
-            return 'callable';
+        if (method_exists($type, 'getName')) {
+            return $type->getName();
+        }
+
+        if (method_exists($type, 'getTypes')) {
+            return $type->getTypes();
         }
 
         if (($class = $this->getClass()) instanceof \ReflectionClass) {

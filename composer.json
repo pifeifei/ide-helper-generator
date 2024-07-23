@@ -22,8 +22,7 @@
         "illuminate/support": "^5.4.24",
         "symfony/console": "^4.4.20|^5.0|^6.0",
         "symfony/finder": "^4.4.20|^5.0|^6.0",
-        "zendframework/zend-code": "^3.0",
-        "zendframework/zend-console": "^2.6"
+        "laminas/laminas-code": "^3.0"
     },
     "require-dev": {
         "ext-phar": "*",

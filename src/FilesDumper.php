@@ -8,16 +8,19 @@ use IDEHelperGenerator\ZendCode\FunctionGenerator;
 use IDEHelperGenerator\ZendCode\FunctionReflection;
 use Iterator;
 use ReflectionExtension;
-use Zend\Code\Generator\ClassGenerator;
-use Zend\Code\Generator\DocBlockGenerator;
-use Zend\Code\Reflection\ClassReflection;
+use Laminas\Code\Generator\ClassGenerator;
+use Laminas\Code\Generator\DocBlockGenerator;
+use Laminas\Code\Reflection\ClassReflection;
 
 class FilesDumper
 {
-    public const CONST_FILENAME = '%s/const.php';
-    public const FUNCTIONS_FILENAME = '%s/functions.php';
+    public const CLASS_ALIAS_FILENAME = 'class_alias.php';
+    public const CONST_FILENAME = 'const.php';
+    public const FUNCTIONS_FILENAME = 'functions.php';
     public const CLASS_FILENAME = '%s.php';
 
+    /** @var array<string, class-string> */
+    protected $classAlias = [];
     private $reflectionExtension;
     private $docBlockGenerator;
 
@@ -59,9 +62,9 @@ class FilesDumper
     }
 
     /**
-     * @return array
+     * @return string[]
      */
-    public function generateConstants()
+    public function generateConstants(): array
     {
         $reflectionConstants = $this->reflectionExtension->getConstants();
 
@@ -87,42 +90,81 @@ class FilesDumper
                 $constName = $constant;
             }
 
-            $encodeValue = \is_string($value) ? sprintf('"%s"', $value) : $value;
+            $encodeValue = $this->encodeValue($value);
             $constantsFiles[$namespaceFilename] .= "const {$constName} = {$encodeValue};\n";
         }
 
         return $constantsFiles;
     }
 
+    protected function encodeValue($value)
+    {
+//        \is_string($value) ? sprintf('\'%s\'', $value) : $value;
+        if (is_string($value)) {
+            return sprintf('\'%s\'', $value);
+        }
+
+        if (is_bool($value)) {
+            return $value ? 'true': 'false';
+        }
+        if (is_null($value)) {
+            return 'null';
+        }
+
+        return $value;
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
     public function generateClasses() //: Generator
     {
-        /** @var \ReflectionClass $phpClassReflection */
-        foreach ($this->reflectionExtension->getClasses() as $fqcn => $phpClassReflection) {
+        foreach ($this->reflectionExtension->getClasses() as $classKey => $phpClassReflection) {
             $classGenerator = ClassGenerator::fromReflection(new ClassReflection($phpClassReflection->getName()));
-            if ($this->docBlockGenerator instanceof DocBlockGenerator) {
-                $classGenerator->setDocBlock($this->docBlockGenerator);
+
+            if ($classKey !== $phpClassReflection->getName()) {
+                $this->classAlias[$classKey] = $phpClassReflection->getName();
+                continue;
             }
-            yield static::fqcnToFilename($fqcn) => $classGenerator->generate();
+            yield static::classKeyToFilename($classKey) => $classGenerator->generate();
         }
     }
 
-    public function generateFunctions() //: array
+    public function generateAlias()
+    {
+        if (count($this->classAlias) === 0) {
+            return [];
+        }
+
+
+        $str = '';
+        array_walk($this->classAlias, function($funName, $className) use (& $str){
+            $str .= sprintf("class_alias(%s::class, %s::class);", $funName, $className).PHP_EOL;
+        });
+        return [static::CLASS_ALIAS_FILENAME => $str];
+    }
+
+    /**
+     * @throws \ReflectionException
+     * @throws \Throwable
+     */
+    public function generateFunctions(): array
     {
         $functionFiles = [];
         foreach ($this->reflectionExtension->getFunctions() as $function_name => $phpFunctionReflection) {
             $functionReflection = new FunctionReflection($function_name);
 
-            $function_filename = sprintf(static::FUNCTIONS_FILENAME, str_replace('\\', '/', $functionReflection->getNamespaceName()));
+            $funFilename = sprintf(static::FUNCTIONS_FILENAME, str_replace('\\', '/', $functionReflection->getNamespaceName()));
 
-            if (isset($functionFiles[$function_filename])) {
-                $functionFiles[$function_filename] .= "\n" .
+            if (isset($functionFiles[$funFilename])) {
+                $functionFiles[$funFilename] .= "\n" .
                     FunctionGenerator::generateByPrototypeArray($functionReflection->getPrototype());
             } else {
                 $namespaceLine = '';
                 if ($namespace = $functionReflection->getNamespaceName()) {
                     $namespaceLine = "namespace {$namespace};";
                 }
-                $functionFiles[$function_filename] = $namespaceLine . "\n" .
+                $functionFiles[$funFilename] = $namespaceLine . "\n" .
                     FunctionGenerator::generateByPrototypeArray($functionReflection->getPrototype());
             }
         }
@@ -135,23 +177,11 @@ class FilesDumper
         yield from $this->generateConstants();
         yield from $this->generateFunctions();
         yield from $this->generateClasses();
-        // interface
-//        ReflectionExtension::getINIEntries — 获取ini配置
-//        ReflectionExtension::getName — 获取扩展名称
-//        ReflectionExtension::getVersion — 获取扩展版本号
-
-//        get_defined_vars()
-//        get_declared_traits()
-//        $generates = new AppendIterator();
-//        $generates->append(new ArrayIterator($this->generateConstants()));
-//        $generates->append(new ArrayIterator($this->generateFunctions()));
-//        $generates->append($this->generateClasses());
-//
-//        return $generates;
+        yield from $this->generateAlias();
     }
 
-    private static function fqcnToFilename(string $fqcn)// :string
+    private static function classKeyToFilename(string $classKey): string
     {
-        return sprintf(static::CLASS_FILENAME, str_replace('\\', '/', $fqcn));
+        return sprintf(static::CLASS_FILENAME, str_replace('\\', '/', $classKey));
     }
 }

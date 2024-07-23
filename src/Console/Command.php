@@ -216,11 +216,6 @@ class Command extends SymfonyCommand
 
     /**
      * Prompt the user for input.
-     *
-     * @param string $question
-     * @param string|null $default
-     *
-     * @return string
      */
     public function ask(string $question, string $default = null): string
     {

@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace IDEHelperGenerator\ZendCode;
 
 use ReflectionFunction;
-use Zend\Code\Generator\AbstractGenerator;
+use Laminas\Code\Generator\AbstractGenerator;
 
 class FunctionGenerator extends AbstractGenerator
 {
@@ -33,7 +33,7 @@ class FunctionGenerator extends AbstractGenerator
             $args[] = $argsLine;
         }
         $line .= implode(', ', $args);
-        $line .= ')' . ('mixed' !== $prototype['return'] ? ": {$prototype['return']}" : '') . ' {}';
+        $line .= ')' . ('mixed' !== $prototype['return'] ? ": ".implode('|', (array)$prototype['return']) : '') . ' {}';
 
         return $line;
     }
@@ -41,10 +41,11 @@ class FunctionGenerator extends AbstractGenerator
     /**
      * Build a Code Generation Php Object from a Function Reflection.
      *
-     * @return self
+     * @return static
      */
     public static function fromReflection(FunctionReflection $functionReflection)
     {
+        return new self();
     }
 
     /**

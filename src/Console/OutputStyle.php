@@ -27,8 +27,6 @@ class OutputStyle extends SymfonyStyle
 
     /**
      * Returns whether verbosity is quiet (-q).
-     *
-     * @return bool
      */
     public function isQuiet(): bool
     {
@@ -47,8 +45,6 @@ class OutputStyle extends SymfonyStyle
 
     /**
      * Returns whether verbosity is very verbose (-vv).
-     *
-     * @return bool
      */
     public function isVeryVerbose(): bool
     {
@@ -57,8 +53,6 @@ class OutputStyle extends SymfonyStyle
 
     /**
      * Returns whether verbosity is debug (-vvv).
-     *
-     * @return bool
      */
     public function isDebug(): bool
     {
